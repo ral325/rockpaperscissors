@@ -1,3 +1,27 @@
+// activity
+const buttons = Array.from(document.querySelectorAll(".button"));
+buttons.forEach(button => button.addEventListener("click",onPlayerChoice));
+
+const status_div = document.querySelector("#results-display");
+
+let playerScore = 0;
+let computerScore = 0;
+
+// functions
+function onPlayerChoice() {
+    playRoundOfRPS(this.id,computerPlay());
+}
+
+function checkIfWinner() { //if they win, display it and disable the buttons
+    if (playerScore > 4) {
+        status_div.textContent = "Player won 5 times! Congratulations! Refresh to play again."
+        buttons.forEach(button => button.removeEventListener("click",onPlayerChoice));
+    } else if (computerScore > 4) {
+        status_div.textContent = "Computer won 5 times! Oh well! Refresh to try again."
+        buttons.forEach(button => button.removeEventListener("click",onPlayerChoice));
+    }
+}
+
 play_options = ["rock", "paper", "scissors"];
 
 function computerPlay() {
@@ -7,19 +31,31 @@ function computerPlay() {
 }
 
 function playRoundOfRPS(playerSelection,computerSelection) {
-    playerSelection = playerSelection.toLowerCase();
+    //playerSelection = playerSelection.toLowerCase(); //not needed when using buttons
 
     if (playerSelection === computerSelection) {
-        return "Tie! You both played " + playerSelection + ".";
+        status_div.textContent = "Tie! Score is unchanged. Player: " + playerScore + " - Computer: " + computerScore;
+        console.log("Player: " + playerSelection + " - Computer: " + computerSelection);
+        checkIfWinner();
+        return;
     }
 
     let playerSelection_index = play_options.indexOf(playerSelection);
     let computerSelection_index = play_options.indexOf(computerSelection);
 
     if (((playerSelection_index - computerSelection_index) + 3) % 3 === 1) {
-        return "You win! " + playerSelection + " beats " + computerSelection + "!"
+        playerScore++;
+        status_div.textContent = "You win! " + capitalizeFirstLetter(playerSelection) +
+            " beats " + computerSelection + "! Player: " + playerScore + " - Computer: " + computerScore;
+        console.log("Player: " + playerSelection + " - Computer: " + computerSelection);
+        checkIfWinner();
+        return;
     }
-    return "You lose! " + computerSelection + " beats " + playerSelection + "!"
+    computerScore++;
+    status_div.textContent = "You lose! " + capitalizeFirstLetter(computerSelection) + " beats " +
+        playerSelection + "! Player: " + playerScore + " - Computer: " + computerScore;
+    console.log("Player: " + playerSelection + " - Computer: " + computerSelection);
+    checkIfWinner();
 }
 
 function game(numberOfRounds) {
@@ -53,4 +89,8 @@ function game(numberOfRounds) {
     } else {
         return "You tied the computer at " + playerWinsCount + " wins each."
     }
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
